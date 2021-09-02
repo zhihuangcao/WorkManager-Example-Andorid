@@ -1,33 +1,39 @@
 package krunal.com.example.workmanager;
 
 
-import android.arch.lifecycle.Observer;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.work.Constraints;
 import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.ListenableWorker;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
+import androidx.work.impl.utils.futures.SettableFuture;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private Button mOneTimeWork, mPeriodicWork,
             mChainableWork, mParallelWork,
-            mCancelPeriodicWork, mWorkWithConstraints, mWorkWithData;
+            mCancelPeriodicWork, mWorkWithConstraints, mWorkWithData, mChainableListenableWork, temp, cancel;
 
     private UUID getId;
 
@@ -35,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mTextView;
 
+    public static Map<String, SettableFuture> futureMap = new HashMap<>();
+
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         mCancelPeriodicWork = findViewById(R.id.CancelPeriodicWork);
         mWorkWithConstraints = findViewById(R.id.workwithconstraints);
         mWorkWithData = findViewById(R.id.WorkWithData);
+        mChainableListenableWork = findViewById(R.id.ChainableListenableWork);
+        temp = findViewById(R.id.ChainableListenableTemp);
+        cancel = findViewById(R.id.ChainableListenableCancel);
 
 
         mOneTimeWork.setOnClickListener(v -> {
@@ -86,6 +98,31 @@ public class MainActivity extends AppCompatActivity {
                     .enqueue();
         });
 
+        mChainableListenableWork.setOnClickListener(v -> {
+            // This is Chainable Work Request it Runs one after author in sequence.
+            OneTimeWorkRequest MyListenableWorkA = new OneTimeWorkRequest.Builder(MyListenableWorkA.class).addTag("MyListenableWork")
+                    .build();
+            OneTimeWorkRequest MyListenableWorkB = new OneTimeWorkRequest.Builder(MyListenableWorkB.class).addTag("MyListenableWork")
+                    .build();
+            OneTimeWorkRequest MyListenableWorkC = new OneTimeWorkRequest.Builder(MyListenableWorkC.class).addTag("MyListenableWork")
+                    .build();
+
+            WorkManager.getInstance()
+                    .beginUniqueWork("MyListenableWorkA", ExistingWorkPolicy.KEEP, MyListenableWorkA)
+                    .then(MyListenableWorkB)
+                    .then(MyListenableWorkC)
+                    .enqueue();
+        });
+
+        temp.setOnClickListener(v -> {
+            SettableFuture result = futureMap.get("MyListenableWorkA");
+            result.set(ListenableWorker.Result.success());
+        });
+
+        cancel.setOnClickListener(v -> {
+            WorkManager.getInstance().cancelAllWorkByTag("MyListenableWork");
+        });
+
         mParallelWork.setOnClickListener(v -> {
             // Here MyWorkA and MyWorkB will run in Parallel and then MyWorkC will run.
             OneTimeWorkRequest MyWorkA = new OneTimeWorkRequest.Builder(MyWorkA.class)
@@ -103,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
                     .beginWith(beginWith_A_and_B)
                     .then(MyWorkC)
                     .enqueue();
-
 
 
         });

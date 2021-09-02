@@ -3,9 +3,9 @@ package krunal.com.example.workmanager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -56,8 +56,6 @@ public class MyWorkWithData extends Worker {
 
         notificationManager.notify(1, notification.build());
     }
-
-
 
 
 }

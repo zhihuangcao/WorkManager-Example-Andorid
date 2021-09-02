@@ -1,9 +1,9 @@
 package krunal.com.example.workmanager;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -21,6 +21,6 @@ public class MyWorkB extends Worker {
 
         Log.e(TAB,"My WorkB");
 
-        return Result.success();
+        return Result.failure();
     }
 }
