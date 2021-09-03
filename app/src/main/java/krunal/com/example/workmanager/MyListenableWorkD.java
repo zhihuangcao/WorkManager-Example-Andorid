@@ -5,33 +5,28 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.work.ListenableWorker;
 import androidx.work.WorkerParameters;
 import androidx.work.impl.utils.futures.SettableFuture;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-public class MyListenableWorkA extends BaseListenableWorker {
+public class MyListenableWorkD extends ListenableWorker {
 
-    private static final String TAB = MyListenableWorkA.class.getSimpleName();
+    private static final String TAB = MyListenableWorkD.class.getSimpleName();
 
-    public MyListenableWorkA(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public MyListenableWorkD(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
     @SuppressLint("RestrictedApi")
     @NonNull
     @Override
-    public ListenableFuture<Result> startWorker() {
-        Log.e(TAB, "MyListenableWorkA");
+    public ListenableFuture<Result> startWork() {
+        Log.e(TAB, "MyListenableWorkD");
         SettableFuture future = SettableFuture.create();
-        MainActivity.futureMap.put("MyListenableWorkA", future);
 //        future.set(Result.success());
         return future;
-    }
-
-    @Override
-    public boolean isAbortUndoneJob() {
-        return MainActivity.futureMap.size() > 0;
     }
 
 }

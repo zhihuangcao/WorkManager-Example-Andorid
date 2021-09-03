@@ -106,9 +106,11 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             OneTimeWorkRequest MyListenableWorkC = new OneTimeWorkRequest.Builder(MyListenableWorkC.class).addTag("MyListenableWork")
                     .build();
+            OneTimeWorkRequest MyListenableWorkD = new OneTimeWorkRequest.Builder(MyListenableWorkD.class).addTag("MyListenableWork")
+                    .build();
 
             WorkManager.getInstance()
-                    .beginUniqueWork("MyListenableWorkA", ExistingWorkPolicy.KEEP, MyListenableWorkA)
+                    .beginUniqueWork("MyListenableWorkD", ExistingWorkPolicy.KEEP, MyListenableWorkD)
                     .then(MyListenableWorkB)
                     .then(MyListenableWorkC)
                     .enqueue();
